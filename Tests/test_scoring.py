@@ -71,3 +71,24 @@ class Test_Scoring(TestCase):
     def test_calc_rec_fp_all(self):
         player = {'receiving_tds': 1, 'receiving_tds_bonus': 1, 'receiving_yds': 118, 'receiving_twoptm': 0}
         self.assertEquals(scoring.cal_rec_fp(player), 6+12+5+0)
+
+    # Test Misc
+    def test_calc_misc_fp_fum(self):
+        player = {'fumbles_lost': 1}
+        self.assertEquals(scoring.cal_misc_fp(player), -2)
+
+    def test_calc_misc_fp_fum_td(self):
+        player = {'fumbles_rec_tds': 1}
+        self.assertEquals(scoring.cal_misc_fp(player), 6)
+
+    def test_calc_misc_fp_kick_td(self):
+        player = {'kickret_tds': 1}
+        self.assertEquals(scoring.cal_misc_fp(player), 12)
+
+    def test_calc_misc_fp_punt_td(self):
+        player = {'puntret_tds': 1}
+        self.assertEquals(scoring.cal_misc_fp(player), 12)
+
+    def test_calc_misc_fp_all(self):
+        player = {'fumbles_lost': 2, 'fumbles_rec_tds': 1, 'kickret_tds': 1, 'puntret_tds': 2}
+        self.assertEquals(scoring.cal_misc_fp(player), -4+6+12+24)

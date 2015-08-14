@@ -175,6 +175,31 @@ def cal_rec_fp(player):
     return points
 
 
+def cal_misc_fp(player):
+    points = 0
+    try:
+        points += int(player['fumbles_lost'] * FUM_LOST_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['fumbles_rec_tds'] * FUM_RET_TD_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['kickret_tds'] * KICK_RET_TD_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['puntret_tds'] * PUNT_RET_TD_FP)
+    except KeyError:
+        pass
+
+    return points
+
+
 def calc_fg_pts(player, game):
     plays = game.drives.plays()
     pts = 0
