@@ -49,47 +49,12 @@ ALLOW_17_FP = 2  # 14-17 points allowed
 ALLOW_21_FP = 1  # 18-21 points allowed
 
 
-def calc_off_fp(player, game):
+def calc_off_fp(player):
     points = 0
-
-    # Passing points
-    try:
-        points += player.passing_tds * PASSING_TD_FP
-        points += player.passing_yds / 25 * PASSING_YDS_FP
-        points += player.passing_twoptm * RECEIVING_TWOPT_FP
-        points += player.passing_ints * PASSING_INT_FP
-    except:
-        pass
-
-    # Rushing points
-    try:
-        points += player.rushing_tds * RUSHING_TD_FP
-        points += player.rushing_yds / 10 * RUSHING_YDS_FP
-        points += player.rushing_twoptm * RUSHING_TWOPT_FP
-    except:
-        pass
-
-    # Receiving points
-    try:
-        points += player.receiving_tds * RECEIVING_TD_FP
-        points += player.receiving_yds / 10 * RECEIVING_YDS_FP
-        points += player.receiving_twoptm * RECEIVING_TWOPT_FP
-    except:
-        pass
-
-    # Misc Offense
-    try:
-        points += player.fumbles_lost * FUM_LOST_FP
-    except:
-        pass
-
-    # Kicking
-    if 'kicking_fgm' in player._stats:
-        points += calc_fg_pts(player, game)
-    try:
-        points += player.kicking_xpmade
-    except:
-        pass
+    points += cal_pass_fp(player)
+    points += cal_rush_fp(player)
+    points += cal_rec_fp(player)
+    points += cal_misc_fp(player)
 
     return points
 
