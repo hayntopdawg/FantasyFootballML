@@ -1,4 +1,5 @@
 import nfldb
+import scoring
 
 __author__ = 'hayntopdawg'
 
@@ -91,6 +92,12 @@ def get_wr_stats(pp):
     players[name]['puntret_tds'] += pp.puntret_tds
 
 
+def get_fp(name):
+    global players
+
+    players[name]['fp'] = scoring.calc_off_fp(players[name])
+
+
 def main():
     global players
 
@@ -117,10 +124,15 @@ def main():
                         add_player(pp)
                         get_wr_stats(pp)
 
-
     for player in players:
-        print player, players[player]
+        get_fp(player)
 
 
 if __name__ == '__main__':
     main()
+    # i = 0
+    for player in players:
+        # if i > 25: break
+        # get_fp(player)
+        print player, players[player]['fp']
+        # i += 1
