@@ -1,6 +1,7 @@
 #! python2
 
 # import nflgame
+from __future__ import division
 
 __author__ = 'hayntopdawg'
 
@@ -19,9 +20,9 @@ RUSHING_TD_BONUS_FP = 6  # 50+ yard TD rush bonus
 RUSHING_TWOPT_FP = 2
 
 # Receiving
-RECEIVING_YDS_FP = 1  # Every 20 rushing yards
+RECEIVING_YDS_FP = 1 / 20  # Every 20 rushing yards
 RECEIVING_TD_FP = 6
-RECEIVING_TD_BONUS_FP = 6  # 50+ yard TD rush bonus
+RECEIVING_TD_BONUS_FP = 6 + RECEIVING_TD_FP  # 50+ yard TD rush bonus
 RECEIVING_TWOPT_FP = 2
 
 # Misc
@@ -47,6 +48,7 @@ ALLOW_13_FP = 4  # 7-13 points allowed
 ALLOW_17_FP = 2  # 14-17 points allowed
 ALLOW_21_FP = 1  # 18-21 points allowed
 
+
 def calc_off_fp(player, game):
     points = 0
 
@@ -56,43 +58,65 @@ def calc_off_fp(player, game):
         points += player.passing_yds / 25 * PASSING_YDS_FP
         points += player.passing_twoptm * RECEIVING_TWOPT_FP
         points += player.passing_ints * PASSING_INT_FP
-    except: pass
+    except:
+        pass
 
     # Rushing points
     try:
         points += player.rushing_tds * RUSHING_TD_FP
         points += player.rushing_yds / 10 * RUSHING_YDS_FP
         points += player.rushing_twoptm * RUSHING_TWOPT_FP
-    except: pass
+    except:
+        pass
 
     # Receiving points
     try:
         points += player.receiving_tds * RECEIVING_TD_FP
         points += player.receiving_yds / 10 * RECEIVING_YDS_FP
         points += player.receiving_twoptm * RECEIVING_TWOPT_FP
-    except: pass
+    except:
+        pass
 
     # Misc Offense
     try:
         points += player.fumbles_lost * FUM_LOST_FP
-    except: pass
+    except:
+        pass
 
     # Kicking
     if 'kicking_fgm' in player._stats:
         points += calc_fg_pts(player, game)
     try:
         points += player.kicking_xpmade
-    except: pass
+    except:
+        pass
 
     return points
 
 
-def cal_rec_fp(player, game):
-    pass
+def cal_rec_fp(player):
+    points = 0
+    try:
+        points += int(player['receiving_tds'] * RECEIVING_TD_FP)
+    except KeyError:
+        pass
 
+    try:
+        points += int(player['receiving_tds_bonus'] * RECEIVING_TD_BONUS_FP)
+    except KeyError:
+        pass
 
-def calc_rec_yd_fp(rec_yds):
-    return rec_yds / 10 * RECEIVING_YDS_FP
+    try:
+        points += int(player['receiving_yds'] * RECEIVING_YDS_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['receiving_twoptm'] * RECEIVING_TWOPT_FP)
+    except KeyError:
+        pass
+
+    return points
 
 
 def calc_fg_pts(player, game):
@@ -111,23 +135,23 @@ def find_num_kicks(plays, stat, **kwargs):
     for player in plays.filter(**kwargs).players():
         return getattr(player, stat)
 
-# season2014week1 = nflgame.games(2014, week=1)
-#
-# # One way to calculate all of the fantasy points for the week may be to find all of the fantasy scoring stats per player
-# # then calculate the points
-#
-# for n, game in enumerate(season2014week1):
-#     # if n > 0: break
-#     for num, p in enumerate(game.players):
-#         # if num > 0: break
-#         if 'defense_tkl' in p._stats: continue # no defensive players will be on a roster
-#         pts = calc_off_fp(p, game)
-#         print "{} {} ({}, {}) scored {} pts".format(p.player.first_name, p.player.last_name, p.player.position, p.team, str(pts))
-#         # print "\t{}".format(p.formatted_stats())
-#
-#         # print p.__dict__
-#         # print p.player.__dict__
-#         # print p, p._stats
-#         # print p.name
-#         # print p.player
-#         # calc_fg_pts(p, game)
+        # season2014week1 = nflgame.games(2014, week=1)
+        #
+        # # One way to calculate all of the fantasy points for the week may be to find all of the fantasy scoring stats per player
+        # # then calculate the points
+        #
+        # for n, game in enumerate(season2014week1):
+        # # if n > 0: break
+        #     for num, p in enumerate(game.players):
+        #         # if num > 0: break
+        #         if 'defense_tkl' in p._stats: continue # no defensive players will be on a roster
+        #         pts = calc_off_fp(p, game)
+        #         print "{} {} ({}, {}) scored {} pts".format(p.player.first_name, p.player.last_name, p.player.position, p.team, str(pts))
+        #         # print "\t{}".format(p.formatted_stats())
+        #
+        #         # print p.__dict__
+        #         # print p.player.__dict__
+        #         # print p, p._stats
+        #         # print p.name
+        #         # print p.player
+        #         # calc_fg_pts(p, game)
