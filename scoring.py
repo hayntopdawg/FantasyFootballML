@@ -7,9 +7,9 @@ __author__ = 'hayntopdawg'
 
 # R-Unit Fantasy Point Values
 # Passing
-PASSING_YDS_FP = 1  # Every 50 passing yards
+PASSING_YDS_FP = 1 / 50  # Every 50 passing yards
 PASSING_TD_FP = 4
-PASSING_TD_BONUS_FP = 4  # 50+ yard TD pass bonus
+PASSING_TD_BONUS_FP = 4 + PASSING_TD_FP  # 50+ yard TD pass bonus
 PASSING_TWOPT_FP = 2
 PASSING_INT_FP = -2
 
@@ -90,6 +90,37 @@ def calc_off_fp(player, game):
         points += player.kicking_xpmade
     except:
         pass
+
+    return points
+
+
+def cal_pass_fp(player):
+    points = 0
+    try:
+        points += int(player['passing_tds'] * PASSING_TD_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['passing_tds_bonus'] * PASSING_TD_BONUS_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['passing_yds'] * PASSING_YDS_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['passing_twoptm'] * PASSING_TWOPT_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['passing_int'] * PASSING_INT_FP)
+    except KeyError:
+        pass
+
 
     return points
 
