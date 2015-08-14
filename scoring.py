@@ -14,9 +14,9 @@ PASSING_TWOPT_FP = 2
 PASSING_INT_FP = -2
 
 # Rushing
-RUSHING_YDS_FP = 1  # Every 20 rushing yards
+RUSHING_YDS_FP = 1 / 20  # Every 20 rushing yards
 RUSHING_TD_FP = 6
-RUSHING_TD_BONUS_FP = 6  # 50+ yard TD rush bonus
+RUSHING_TD_BONUS_FP = 6 + RUSHING_TD_FP  # 50+ yard TD rush bonus
 RUSHING_TWOPT_FP = 2
 
 # Receiving
@@ -89,6 +89,31 @@ def calc_off_fp(player, game):
     try:
         points += player.kicking_xpmade
     except:
+        pass
+
+    return points
+
+
+def cal_rush_fp(player):
+    points = 0
+    try:
+        points += int(player['rushing_tds'] * RUSHING_TD_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['rushing_tds_bonus'] * RUSHING_TD_BONUS_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['rushing_yds'] * RUSHING_YDS_FP)
+    except KeyError:
+        pass
+
+    try:
+        points += int(player['rushing_twoptm'] * RUSHING_TWOPT_FP)
+    except KeyError:
         pass
 
     return points
