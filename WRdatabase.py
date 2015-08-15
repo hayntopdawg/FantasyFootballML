@@ -21,8 +21,12 @@ def add_player(pp, year, week):
     """
     global players
 
-    players[str(pp.player)] = {'name': pp.player.full_name}
-    players[str(pp.player)][str(year)] = {}
+    # Change from str(pp.player) to pp.player_id because pp.player may change each year
+    players[str(pp.player)] = {'name': pp.player.full_name,
+                               'height': pp.player.height,
+                               'weight': pp.player.weight,
+                               'dob': pp.player.birthdate}
+    players[str(pp.player)][str(year)] = {'years_pro': 0}  # need to add method
     players[str(pp.player)][str(year)][str(week)] = {'team': '',  # need to add method
                                                      'opponent': '',  # need to add method
                                                      'home': '',  # need to add method (True or False)
@@ -51,6 +55,15 @@ def add_player(pp, year, week):
                                                      'kickret_tds': 0,
                                                      'puntret_tds': 0,
                                                      'fp': 0}
+
+
+def get_game_stats(pp, season, week):
+    global players
+    player = players[str(pp.player)][str(season)][str(week)]
+
+    # player['team'] =
+    # player['opponent'] =
+    # player['home'] =
 
 
 def get_rec_stats(pp, season, week):
@@ -175,6 +188,8 @@ if __name__ == '__main__':
     # print players
     # i = 0
     for player in players:
+        print players[player]
+        break
         # if i > 25: break
-        print player, players[player]['2014']['1']['fp']
+        # print player, players[player]['2014']['1']['fp']
         # i += 1
