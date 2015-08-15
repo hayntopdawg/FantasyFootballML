@@ -21,30 +21,30 @@ def add_player(pp, year, week):
     """
     global players
 
-    players[str(pp.player)] = {}
+    players[str(pp.player)] = {'name': pp.player.full_name}
     players[str(pp.player)][str(year)] = {}
     players[str(pp.player)][str(year)][str(week)] = {'team': '',  # need to add method
                                                      'opponent': '',  # need to add method
-                                                     'home_away': '',  # need to add method
+                                                     'home': '',  # need to add method (True or False)
                                                      'receiving_tar': 0,
                                                      'receiving_rec': 0,
                                                      'receiving_yds': 0,
                                                      'receiving_tds': 0,
                                                      'receiving_tds_bonus': 0,
-                                                     'receiving_twopta': 0,  # need to add method
+                                                     'receiving_twopta': 0,
                                                      'receiving_twoptm': 0,
                                                      'rushing_att': 0,
                                                      'rushing_yds': 0,
                                                      'rushing_tds': 0,
                                                      'rushing_tds_bonus': 0,
-                                                     'rushing_twopta': 0,  # need to add method
+                                                     'rushing_twopta': 0,
                                                      'rushing_twoptm': 0,
                                                      'passing_att': 0,
                                                      'passing_cmp': 0,
                                                      'passing_int': 0,
                                                      'passing_tds': 0,
                                                      'passing_tds_bonus': 0,
-                                                     'passing_twopta': 0,  # need to add method
+                                                     'passing_twopta': 0,
                                                      'passing_twoptm': 0,
                                                      'fumbles_lost': 0,
                                                      'fumbles_rec_tds': 0,
@@ -53,11 +53,10 @@ def add_player(pp, year, week):
                                                      'fp': 0}
 
 
-def get_wr_stats(pp, season, week):
+def get_rec_stats(pp, season, week):
     global players
     player = players[str(pp.player)][str(season)][str(week)]
 
-    # Receiving stats
     player['receiving_tar'] += pp.receiving_tar
     player['receiving_rec'] += pp.receiving_rec
     player['receiving_yds'] += pp.receiving_yds
@@ -72,7 +71,11 @@ def get_wr_stats(pp, season, week):
         else:
             player['receiving_tds'] += pp.receiving_tds
 
-    # Rushing stats
+
+def get_rush_stats(pp, season, week):
+    global players
+    player = players[str(pp.player)][str(season)][str(week)]
+
     player['rushing_att'] += pp.rushing_att
     player['rushing_yds'] += pp.rushing_yds
     player['rushing_twopta'] += pp.rushing_twopta
@@ -86,7 +89,11 @@ def get_wr_stats(pp, season, week):
         else:
             player['rushing_tds'] += pp.rushing_tds
 
-    # Passing stats
+
+def get_pass_stats(pp, season, week):
+    global players
+    player = players[str(pp.player)][str(season)][str(week)]
+
     player['passing_att'] += pp.passing_att
     player['passing_cmp'] += pp.passing_cmp
     player['passing_int'] += pp.passing_int
@@ -100,11 +107,29 @@ def get_wr_stats(pp, season, week):
         else:
             player['passing_tds'] += pp.passing_tds
 
-    # Misc stats
+
+def get_misc_stats(pp, season, week):
+    global players
+    player = players[str(pp.player)][str(season)][str(week)]
+
     player['fumbles_lost'] += pp.fumbles_lost
     player['fumbles_rec_tds'] += pp.fumbles_rec_tds
     player['kickret_tds'] += pp.kickret_tds
     player['puntret_tds'] += pp.puntret_tds
+
+
+def get_wr_stats(pp, season, week):
+    # Receiving stats
+    get_rec_stats(pp, season, week)
+
+    # Rushing stats
+    get_rush_stats(pp, season, week)
+
+    # Passing stats
+    get_pass_stats(pp, season, week)
+
+    # Misc stats
+    get_misc_stats(pp, season, week)
 
 
 def get_fp(name, season, week):
