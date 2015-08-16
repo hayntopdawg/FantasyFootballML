@@ -29,7 +29,7 @@ def add_player(pp, year, week):
     players[str(pp.player)][str(year)] = {'years_pro': 0}  # need to add method
     players[str(pp.player)][str(year)][str(week)] = {'team': '',  # need to add method
                                                      'opponent': '',  # need to add method
-                                                     'home': '',  # need to add method (True or False)
+                                                     'at_home': '',  # need to add method (True or False)
                                                      'receiving_tar': 0,
                                                      'receiving_rec': 0,
                                                      'receiving_yds': 0,
@@ -57,13 +57,21 @@ def add_player(pp, year, week):
                                                      'fp': 0}
 
 
-def get_game_stats(pp, season, week):
+def get_game_info(pp, season, week, game):
     global players
     player = players[str(pp.player)][str(season)][str(week)]
 
-    # player['team'] =
-    # player['opponent'] =
-    # player['home'] =
+    team = pp.team
+    home = game.home_team
+    away = game.away_team
+
+    player['team'] = team
+    if team == home:
+        player['opponent'] = away
+        player['at_home'] = True
+    else:
+        player['opponent'] = home
+        player['at_home'] = False
 
 
 def get_rec_stats(pp, season, week):
@@ -132,23 +140,15 @@ def get_misc_stats(pp, season, week):
 
 
 def get_wr_stats(pp, season, week):
-    # Receiving stats
-    get_rec_stats(pp, season, week)
-
-    # Rushing stats
-    get_rush_stats(pp, season, week)
-
-    # Passing stats
-    get_pass_stats(pp, season, week)
-
-    # Misc stats
-    get_misc_stats(pp, season, week)
+    get_rec_stats(pp, season, week)   # Receiving stats
+    get_rush_stats(pp, season, week)  # Rushing stats
+    get_pass_stats(pp, season, week)  # Passing stats
+    get_misc_stats(pp, season, week)  # Misc stats
 
 
 def get_fp(name, season, week):
     global players
     player = players[name][str(season)][str(week)]
-
     player['fp'] = scoring.calc_off_fp(player)
 
 
@@ -178,9 +178,10 @@ def main():
                             get_wr_stats(pp, season, week)
                         except KeyError:
                             add_player(pp, season, week)
+                            get_game_info(pp, season, week, game)  # Will this work for more than 1 week/season?
                             get_wr_stats(pp, season, week)
-            for player in players:
-                get_fp(player, season, week)
+                for player in players:
+                    get_fp(player, season, week)
 
 
 if __name__ == '__main__':
