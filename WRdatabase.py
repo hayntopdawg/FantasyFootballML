@@ -33,34 +33,34 @@ def add_player_year(pp, season):
 
 
 def add_player_week(pp, season, week):
-    players[str(pp.player)][str(season)][str(week)] = {'team': '',  # need to add method
-                                                     'opponent': '',  # need to add method
-                                                     'at_home': '',  # need to add method (True or False)
-                                                     'receiving_tar': 0,
-                                                     'receiving_rec': 0,
-                                                     'receiving_yds': 0,
-                                                     'receiving_tds': 0,
-                                                     'receiving_tds_bonus': 0,
-                                                     'receiving_twopta': 0,
-                                                     'receiving_twoptm': 0,
-                                                     'rushing_att': 0,
-                                                     'rushing_yds': 0,
-                                                     'rushing_tds': 0,
-                                                     'rushing_tds_bonus': 0,
-                                                     'rushing_twopta': 0,
-                                                     'rushing_twoptm': 0,
-                                                     'passing_att': 0,
-                                                     'passing_cmp': 0,
-                                                     'passing_int': 0,
-                                                     'passing_tds': 0,
-                                                     'passing_tds_bonus': 0,
-                                                     'passing_twopta': 0,
-                                                     'passing_twoptm': 0,
-                                                     'fumbles_lost': 0,
-                                                     'fumbles_rec_tds': 0,
-                                                     'kickret_tds': 0,
-                                                     'puntret_tds': 0,
-                                                     'fp': 0}
+    players[str(pp.player)][str(season)][str(week)] = {'team': '',
+                                                       'opponent': '',
+                                                       'at_home': '',  # boolean
+                                                       'receiving_tar': 0,
+                                                       'receiving_rec': 0,
+                                                       'receiving_yds': 0,
+                                                       'receiving_tds': 0,
+                                                       'receiving_tds_bonus': 0,
+                                                       'receiving_twopta': 0,
+                                                       'receiving_twoptm': 0,
+                                                       'rushing_att': 0,
+                                                       'rushing_yds': 0,
+                                                       'rushing_tds': 0,
+                                                       'rushing_tds_bonus': 0,
+                                                       'rushing_twopta': 0,
+                                                       'rushing_twoptm': 0,
+                                                       'passing_att': 0,
+                                                       'passing_cmp': 0,
+                                                       'passing_int': 0,
+                                                       'passing_tds': 0,
+                                                       'passing_tds_bonus': 0,
+                                                       'passing_twopta': 0,
+                                                       'passing_twoptm': 0,
+                                                       'fumbles_lost': 0,
+                                                       'fumbles_rec_tds': 0,
+                                                       'kickret_tds': 0,
+                                                       'puntret_tds': 0,
+                                                       'fp': 0}
 
 
 def get_game_info(pp, season, week, game):
@@ -146,7 +146,7 @@ def get_misc_stats(pp, season, week):
 
 
 def get_wr_stats(pp, season, week):
-    get_rec_stats(pp, season, week)   # Receiving stats
+    get_rec_stats(pp, season, week)  # Receiving stats
     get_rush_stats(pp, season, week)  # Rushing stats
     get_pass_stats(pp, season, week)  # Passing stats
     get_misc_stats(pp, season, week)  # Misc stats
@@ -158,15 +158,12 @@ def get_fp(name, season, week):
     player['fp'] = scoring.calc_off_fp(player)
 
 
-def main():
+def create_wr_db(seasons, weeks=range(1, 18)):
     global players
+    players = {}
 
     # Connect to database
     db = nfldb.connect()
-
-    seasons = range(2014, 2015)
-    weeks = range(1, 3)
-    players = {}
 
     for season in seasons:
         for week in weeks:
@@ -192,7 +189,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    seasons = range(2014, 2015)
+    weeks = range(1, 3)
+    create_wr_db(seasons, weeks)
     # print players
     # i = 0
     for player in players:
