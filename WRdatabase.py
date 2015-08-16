@@ -184,13 +184,14 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                             get_game_info(pp, season, week, game)
                         get_wr_stats(pp, season, week)
                 for player in players:
-                    if str(week) in players[player][str(season)]:  # Needed because players may not play every week
+                    # Test for players who do not play every season/week
+                    if str(season) in players[player] and str(week) in players[player][str(season)]:
                         get_fp(player, season, week)
 
 
 if __name__ == '__main__':
-    seasons = range(2014, 2015)
-    weeks = range(1, 3)
+    seasons = range(20014, 2015)
+    weeks = range(1, 2)
     create_wr_db(seasons, weeks)
     # print players
     # i = 0
