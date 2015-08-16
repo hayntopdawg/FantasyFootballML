@@ -17,55 +17,60 @@ def is_WR(pp):
 
 def add_player(pp):
     """
-    Create a player with stats set to zero
+    Add player to players dictionary
     """
     global players
-
-    # Change from str(pp.player) to pp.player_id because pp.player may change each year
-    players[str(pp.player)] = {'name': pp.player.full_name,
-                               'height': pp.player.height,
-                               'weight': pp.player.weight,
-                               'dob': pp.player.birthdate}
+    
+    players[pp.player_id] = {'name': pp.player.full_name,
+                             'height': pp.player.height,
+                             'weight': pp.player.weight,
+                             'dob': pp.player.birthdate}
 
 
 def add_player_year(pp, season):
-    players[str(pp.player)][str(season)] = {'years_pro': 0}  # need to add method
+    """
+    Add player's season to players dictionary
+    """
+    players[pp.player_id][str(season)] = {'years_pro': 0}  # need to add method
 
 
 def add_player_week(pp, season, week):
-    players[str(pp.player)][str(season)][str(week)] = {'team': '',
-                                                       'opponent': '',
-                                                       'at_home': '',  # boolean
-                                                       'receiving_tar': 0,
-                                                       'receiving_rec': 0,
-                                                       'receiving_yds': 0,
-                                                       'receiving_tds': 0,
-                                                       'receiving_tds_bonus': 0,
-                                                       'receiving_twopta': 0,
-                                                       'receiving_twoptm': 0,
-                                                       'rushing_att': 0,
-                                                       'rushing_yds': 0,
-                                                       'rushing_tds': 0,
-                                                       'rushing_tds_bonus': 0,
-                                                       'rushing_twopta': 0,
-                                                       'rushing_twoptm': 0,
-                                                       'passing_att': 0,
-                                                       'passing_cmp': 0,
-                                                       'passing_int': 0,
-                                                       'passing_tds': 0,
-                                                       'passing_tds_bonus': 0,
-                                                       'passing_twopta': 0,
-                                                       'passing_twoptm': 0,
-                                                       'fumbles_lost': 0,
-                                                       'fumbles_rec_tds': 0,
-                                                       'kickret_tds': 0,
-                                                       'puntret_tds': 0,
-                                                       'fp': 0}
+    """
+    Add player's week to players dictionary
+    """
+    players[pp.player_id][str(season)][str(week)] = {'team': '',
+                                                     'opponent': '',
+                                                     'at_home': '',  # boolean
+                                                     'receiving_tar': 0,
+                                                     'receiving_rec': 0,
+                                                     'receiving_yds': 0,
+                                                     'receiving_tds': 0,
+                                                     'receiving_tds_bonus': 0,
+                                                     'receiving_twopta': 0,
+                                                     'receiving_twoptm': 0,
+                                                     'rushing_att': 0,
+                                                     'rushing_yds': 0,
+                                                     'rushing_tds': 0,
+                                                     'rushing_tds_bonus': 0,
+                                                     'rushing_twopta': 0,
+                                                     'rushing_twoptm': 0,
+                                                     'passing_att': 0,
+                                                     'passing_cmp': 0,
+                                                     'passing_int': 0,
+                                                     'passing_tds': 0,
+                                                     'passing_tds_bonus': 0,
+                                                     'passing_twopta': 0,
+                                                     'passing_twoptm': 0,
+                                                     'fumbles_lost': 0,
+                                                     'fumbles_rec_tds': 0,
+                                                     'kickret_tds': 0,
+                                                     'puntret_tds': 0,
+                                                     'fp': 0}
 
 
 def get_game_info(pp, season, week, game):
     global players
-    player = players[str(pp.player)][str(season)][str(week)]
+    player = players[pp.player_id][str(season)][str(week)]
 
     team = pp.team
     home = game.home_team
@@ -82,7 +87,7 @@ def get_game_info(pp, season, week, game):
 
 def get_rec_stats(pp, season, week):
     global players
-    player = players[str(pp.player)][str(season)][str(week)]
+    player = players[pp.player_id][str(season)][str(week)]
 
     player['receiving_tar'] += pp.receiving_tar
     player['receiving_rec'] += pp.receiving_rec
@@ -101,7 +106,7 @@ def get_rec_stats(pp, season, week):
 
 def get_rush_stats(pp, season, week):
     global players
-    player = players[str(pp.player)][str(season)][str(week)]
+    player = players[pp.player_id][str(season)][str(week)]
 
     player['rushing_att'] += pp.rushing_att
     player['rushing_yds'] += pp.rushing_yds
@@ -119,7 +124,7 @@ def get_rush_stats(pp, season, week):
 
 def get_pass_stats(pp, season, week):
     global players
-    player = players[str(pp.player)][str(season)][str(week)]
+    player = players[pp.player_id][str(season)][str(week)]
 
     player['passing_att'] += pp.passing_att
     player['passing_cmp'] += pp.passing_cmp
@@ -137,7 +142,7 @@ def get_pass_stats(pp, season, week):
 
 def get_misc_stats(pp, season, week):
     global players
-    player = players[str(pp.player)][str(season)][str(week)]
+    player = players[pp.player_id][str(season)][str(week)]
 
     player['fumbles_lost'] += pp.fumbles_lost
     player['fumbles_rec_tds'] += pp.fumbles_rec_tds
@@ -175,11 +180,11 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                 for pp in game.play_players:
                     # If player is a WR/TE or guess_position == WR
                     if is_WR(pp):
-                        if str(pp.player) not in players:
+                        if pp.player_id not in players:
                             add_player(pp)
-                        if str(season) not in players[str(pp.player)]:
+                        if str(season) not in players[pp.player_id]:
                             add_player_year(pp, season)
-                        if str(week) not in players[str(pp.player)][str(season)]:
+                        if str(week) not in players[pp.player_id][str(season)]:
                             add_player_week(pp, season, week)
                             get_game_info(pp, season, week, game)
                         get_wr_stats(pp, season, week)
@@ -187,12 +192,13 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                     # Test for players who do not play every season/week
                     if str(season) in players[player] and str(week) in players[player][str(season)]:
                         get_fp(player, season, week)
+    return players
 
 
 if __name__ == '__main__':
-    seasons = range(20014, 2015)
+    seasons = range(2014, 2015)
     weeks = range(1, 2)
-    create_wr_db(seasons, weeks)
+    players = create_wr_db(seasons, weeks)
     # print players
     # i = 0
     for player in players:
