@@ -15,7 +15,7 @@ def is_WR(pp):
         return False
 
 
-def add_player(pp, year, week):
+def add_player(pp):
     """
     Create a player with stats set to zero
     """
@@ -26,8 +26,14 @@ def add_player(pp, year, week):
                                'height': pp.player.height,
                                'weight': pp.player.weight,
                                'dob': pp.player.birthdate}
-    players[str(pp.player)][str(year)] = {'years_pro': 0}  # need to add method
-    players[str(pp.player)][str(year)][str(week)] = {'team': '',  # need to add method
+
+
+def add_player_year(pp, season):
+    players[str(pp.player)][str(season)] = {'years_pro': 0}  # need to add method
+
+
+def add_player_week(pp, season, week):
+    players[str(pp.player)][str(season)][str(week)] = {'team': '',  # need to add method
                                                      'opponent': '',  # need to add method
                                                      'at_home': '',  # need to add method (True or False)
                                                      'receiving_tar': 0,
@@ -157,31 +163,32 @@ def main():
 
     # Connect to database
     db = nfldb.connect()
-    # Conduct a query
-    q = nfldb.Query(db)
 
     seasons = range(2014, 2015)
-    weeks = range(1, 2)
-
+    weeks = range(1, 3)
     players = {}
 
     for season in seasons:
         for week in weeks:
-            # q = nfldb.Query(db)
+            # Conduct a query
+            q = nfldb.Query(db)
             games = q.game(season_year=season, season_type='Regular', week=week).as_games()
 
             for game in games:
                 for pp in game.play_players:
                     # If player is a WR/TE or guess_position == WR
                     if is_WR(pp):
-                        try:
-                            get_wr_stats(pp, season, week)
-                        except KeyError:
-                            add_player(pp, season, week)
-                            get_game_info(pp, season, week, game)  # Will this work for more than 1 week/season?
-                            get_wr_stats(pp, season, week)
+                        if str(pp.player) not in players:
+                            add_player(pp)
+                        if str(season) not in players[str(pp.player)]:
+                            add_player_year(pp, season)
+                        if str(week) not in players[str(pp.player)][str(season)]:
+                            add_player_week(pp, season, week)
+                            get_game_info(pp, season, week, game)
+                        get_wr_stats(pp, season, week)
                 for player in players:
-                    get_fp(player, season, week)
+                    if str(week) in players[player][str(season)]:  # Needed because players may not play every week
+                        get_fp(player, season, week)
 
 
 if __name__ == '__main__':
@@ -191,6 +198,7 @@ if __name__ == '__main__':
     for player in players:
         print players[player]
         break
-        # if i > 25: break
+        # if i > 5: break
+        # print player, players[player]
         # print player, players[player]['2014']['1']['fp']
         # i += 1
