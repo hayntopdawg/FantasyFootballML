@@ -20,25 +20,54 @@ def add_player(pp):
     Add player to players dictionary
     """
     global players
-    
+
     players[pp.player_id] = {'name': pp.player.full_name,
                              'height': pp.player.height,
                              'weight': pp.player.weight,
-                             'dob': pp.player.birthdate}
+                             'dob': pp.player.birthdate,
+                             'seasons': {}}
 
 
 def add_player_year(pp, season):
     """
     Add player's season to players dictionary
     """
-    players[pp.player_id][str(season)] = {'years_pro': 0}  # need to add method
+    global players
+    players[pp.player_id]['seasons'][str(season)] = {'age': 0,  # need to add method
+                                          'years_pro': 0}  # need to add method
+
+
+def calc_age(pp, season, db):
+    pass
+
+
+def calc_years_pro(pp, season, game, db):
+    # global players
+    # if pp.player.years_pro is None:
+    #     print 'pp.player:', pp.player, len(players[pp.player_id])-4
+    #     years_pro = len(players[pp.player_id])-4
+    #     print 'pp.player:', pp.player
+    #     print 'pp.player.years_pro:', pp.player.years_pro
+    #     print 'nfldb.current(db)[1]:', nfldb.current(db)[1]
+    #     print 'game.season_year:', game.season_year
+    # elif pp.player.years_pro - (nfldb.current(db)[1] - game.season_year) < 0:
+    #     print 'pp.player:', pp.player.full_name
+    #     print 'pp.player.years_pro:', pp.player.years_pro
+    #     print 'nfldb.current(db)[1]:', nfldb.current(db)[1]
+    #     print 'game.season_year:', game.season_year
+    # else:
+    #     print "Last season played:",
+    #     years_pro = pp.player.years_pro
+    # years_pro = pp.player.years_pro - (nfldb.current(db)[1] - game.season_year)
+    # players[pp.player_id]['seasons'][str(season)]['years_pro'] = years_pro
+    pass
 
 
 def add_player_week(pp, season, week):
     """
     Add player's week to players dictionary
     """
-    players[pp.player_id][str(season)][str(week)] = {'team': '',
+    players[pp.player_id]['seasons'][str(season)][str(week)] = {'team': '',
                                                      'opponent': '',
                                                      'at_home': '',  # boolean
                                                      'receiving_tar': 0,
@@ -70,7 +99,7 @@ def add_player_week(pp, season, week):
 
 def get_game_info(pp, season, week, game):
     global players
-    player = players[pp.player_id][str(season)][str(week)]
+    player = players[pp.player_id]['seasons'][str(season)][str(week)]
 
     team = pp.team
     home = game.home_team
@@ -87,7 +116,7 @@ def get_game_info(pp, season, week, game):
 
 def get_rec_stats(pp, season, week):
     global players
-    player = players[pp.player_id][str(season)][str(week)]
+    player = players[pp.player_id]['seasons'][str(season)][str(week)]
 
     player['receiving_tar'] += pp.receiving_tar
     player['receiving_rec'] += pp.receiving_rec
@@ -106,7 +135,7 @@ def get_rec_stats(pp, season, week):
 
 def get_rush_stats(pp, season, week):
     global players
-    player = players[pp.player_id][str(season)][str(week)]
+    player = players[pp.player_id]['seasons'][str(season)][str(week)]
 
     player['rushing_att'] += pp.rushing_att
     player['rushing_yds'] += pp.rushing_yds
@@ -124,7 +153,7 @@ def get_rush_stats(pp, season, week):
 
 def get_pass_stats(pp, season, week):
     global players
-    player = players[pp.player_id][str(season)][str(week)]
+    player = players[pp.player_id]['seasons'][str(season)][str(week)]
 
     player['passing_att'] += pp.passing_att
     player['passing_cmp'] += pp.passing_cmp
@@ -142,7 +171,7 @@ def get_pass_stats(pp, season, week):
 
 def get_misc_stats(pp, season, week):
     global players
-    player = players[pp.player_id][str(season)][str(week)]
+    player = players[pp.player_id]['seasons'][str(season)][str(week)]
 
     player['fumbles_lost'] += pp.fumbles_lost
     player['fumbles_rec_tds'] += pp.fumbles_rec_tds
@@ -184,7 +213,9 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                             add_player(pp)
                         if str(season) not in players[pp.player_id]:
                             add_player_year(pp, season)
-                        if str(week) not in players[pp.player_id][str(season)]:
+                            # add calc_age
+                            calc_years_pro(pp, season, game, db)  # add calc_years_pro
+                        if str(week) not in players[pp.player_id]['seasons'][str(season)]:
                             add_player_week(pp, season, week)
                             get_game_info(pp, season, week, game)
                         get_wr_stats(pp, season, week)
@@ -196,7 +227,7 @@ def create_wr_db(seasons, weeks=range(1, 18)):
 
 
 if __name__ == '__main__':
-    seasons = range(2014, 2015)
+    seasons = range(2013, 2015)
     weeks = range(1, 2)
     players = create_wr_db(seasons, weeks)
     # print players
