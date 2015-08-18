@@ -33,8 +33,12 @@ def add_player_year(pp, season):
     Add player's season to players dictionary
     """
     global players
+
+    years_pro = pp.player.years_pro
+    if years_pro is None:
+        years_pro = 0
     players[pp.player_id]['seasons'][str(season)] = {'age': 0,  # need to add method
-                                                     'years_pro': 0,  # need to add method
+                                                     'years_pro': years_pro,  # need to add method
                                                      'weeks': {}}
 
 
@@ -234,7 +238,6 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                         if str(season) not in players[pp.player_id]['seasons']:
                             add_player_year(pp, season)
                             # add calc_age
-                            calc_years_pro(pp, season, game, db)  # add calc_years_pro
                         if str(week) not in players[pp.player_id]['seasons'][str(season)]['weeks']:
                             add_player_week(pp, season, week)
                             get_game_info(pp, season, week, game)
@@ -250,17 +253,17 @@ def create_wr_db(seasons, weeks=range(1, 18)):
 
 
 if __name__ == '__main__':
-    seasons = range(2014, 2015)
-    weeks = range(1, 2)
+    seasons = range(2013, 2015)
+    weeks = range(1, 18)
     players = create_wr_db(seasons, weeks)
-    # i = 0
+    i = 0
     for player in players:
         # print players[player]
-    #     break
-    #     if i > 5: break
-    #     print player, players[player]
-        print players[player]['name'], players[player]['seasons']['2014']['weeks']['1']['fp']
-    #     i += 1
+        # break
+        if i > 5: break
+        print player, players[player]
+        # print players[player]['name'], players[player]['seasons']['2014']['weeks']['1']['fp']
+        i += 1
     # for season in players[player]['seasons']:
     #     print season
     #     print type(season)
