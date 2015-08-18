@@ -34,18 +34,20 @@ def add_player_year(pp, season):
     """
     global players
     players[pp.player_id]['seasons'][str(season)] = {'age': 0,  # need to add method
-                                          'years_pro': 0}  # need to add method
+                                                     'years_pro': 0}  # need to add method
 
 
 def calc_age(pp, season, db):
     pass
 
 
+# Assumes database is pulled up to current date
 def calc_years_pro(pp, season, game, db):
     # global players
     # if pp.player.years_pro is None:
-    #     print 'pp.player:', pp.player, len(players[pp.player_id])-4
+    # print 'pp.player:', pp.player, len(players[pp.player_id])-4
     #     years_pro = len(players[pp.player_id])-4
+    #     print 'years_pro', len(players[pp.player_id])-4
     #     print 'pp.player:', pp.player
     #     print 'pp.player.years_pro:', pp.player.years_pro
     #     print 'nfldb.current(db)[1]:', nfldb.current(db)[1]
@@ -60,6 +62,23 @@ def calc_years_pro(pp, season, game, db):
     #     years_pro = pp.player.years_pro
     # years_pro = pp.player.years_pro - (nfldb.current(db)[1] - game.season_year)
     # players[pp.player_id]['seasons'][str(season)]['years_pro'] = years_pro
+
+    # If pp.player.years_pro is None
+    #     Player should only have 1 season under seasons
+    #     Years pro = 0 for 1 Rookie season
+
+    # If pp.player.status == 'Active'
+    #     If nfldb.current(db)[1] != max(season) in seasons
+    #          Years pro for max(season) in seasons = pp.player.years_pro - 1
+    #          Years pro - 1 for each season after
+    #     Else
+    #          Years pro for max(season) in seasons = pp.player.years_pro
+    #          Years pro - 1 for each season after
+
+    # If pp.player.status != 'Active'
+    #     Years pro for max(season) in seasons = pp.player.years_pro
+    #     Years pro - 1 for each season after
+
     pass
 
 
@@ -68,33 +87,33 @@ def add_player_week(pp, season, week):
     Add player's week to players dictionary
     """
     players[pp.player_id]['seasons'][str(season)][str(week)] = {'team': '',
-                                                     'opponent': '',
-                                                     'at_home': '',  # boolean
-                                                     'receiving_tar': 0,
-                                                     'receiving_rec': 0,
-                                                     'receiving_yds': 0,
-                                                     'receiving_tds': 0,
-                                                     'receiving_tds_bonus': 0,
-                                                     'receiving_twopta': 0,
-                                                     'receiving_twoptm': 0,
-                                                     'rushing_att': 0,
-                                                     'rushing_yds': 0,
-                                                     'rushing_tds': 0,
-                                                     'rushing_tds_bonus': 0,
-                                                     'rushing_twopta': 0,
-                                                     'rushing_twoptm': 0,
-                                                     'passing_att': 0,
-                                                     'passing_cmp': 0,
-                                                     'passing_int': 0,
-                                                     'passing_tds': 0,
-                                                     'passing_tds_bonus': 0,
-                                                     'passing_twopta': 0,
-                                                     'passing_twoptm': 0,
-                                                     'fumbles_lost': 0,
-                                                     'fumbles_rec_tds': 0,
-                                                     'kickret_tds': 0,
-                                                     'puntret_tds': 0,
-                                                     'fp': 0}
+                                                                'opponent': '',
+                                                                'at_home': '',  # boolean
+                                                                'receiving_tar': 0,
+                                                                'receiving_rec': 0,
+                                                                'receiving_yds': 0,
+                                                                'receiving_tds': 0,
+                                                                'receiving_tds_bonus': 0,
+                                                                'receiving_twopta': 0,
+                                                                'receiving_twoptm': 0,
+                                                                'rushing_att': 0,
+                                                                'rushing_yds': 0,
+                                                                'rushing_tds': 0,
+                                                                'rushing_tds_bonus': 0,
+                                                                'rushing_twopta': 0,
+                                                                'rushing_twoptm': 0,
+                                                                'passing_att': 0,
+                                                                'passing_cmp': 0,
+                                                                'passing_int': 0,
+                                                                'passing_tds': 0,
+                                                                'passing_tds_bonus': 0,
+                                                                'passing_twopta': 0,
+                                                                'passing_twoptm': 0,
+                                                                'fumbles_lost': 0,
+                                                                'fumbles_rec_tds': 0,
+                                                                'kickret_tds': 0,
+                                                                'puntret_tds': 0,
+                                                                'fp': 0}
 
 
 def get_game_info(pp, season, week, game):
@@ -188,7 +207,7 @@ def get_wr_stats(pp, season, week):
 
 def get_fp(name, season, week):
     global players
-    player = players[name][str(season)][str(week)]
+    player = players[name]['seasons'][str(season)][str(week)]
     player['fp'] = scoring.calc_off_fp(player)
 
 
@@ -211,7 +230,7 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                     if is_WR(pp):
                         if pp.player_id not in players:
                             add_player(pp)
-                        if str(season) not in players[pp.player_id]:
+                        if str(season) not in players[pp.player_id]['seasons']:
                             add_player_year(pp, season)
                             # add calc_age
                             calc_years_pro(pp, season, game, db)  # add calc_years_pro
@@ -219,23 +238,24 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                             add_player_week(pp, season, week)
                             get_game_info(pp, season, week, game)
                         get_wr_stats(pp, season, week)
-                for player in players:
-                    # Test for players who do not play every season/week
-                    if str(season) in players[player] and str(week) in players[player][str(season)]:
-                        get_fp(player, season, week)
+            for player in players:
+                # Test for players who do not play every season/week
+                if str(season) in players[player]['seasons'] and str(week) in players[player]['seasons'][str(season)]:
+                    get_fp(player, season, week)
     return players
 
 
 if __name__ == '__main__':
-    seasons = range(2013, 2015)
+    seasons = range(2014, 2015)
     weeks = range(1, 2)
     players = create_wr_db(seasons, weeks)
     # print players
-    # i = 0
+    i = 0
     for player in players:
+        # print "Last season played:", max(players[player]['seasons'])
         print players[player]
-        break
-        # if i > 5: break
+        # break
+        if i > 5: break
         # print player, players[player]
         # print player, players[player]['2014']['1']['fp']
-        # i += 1
+        i += 1
