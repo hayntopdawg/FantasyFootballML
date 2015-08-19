@@ -86,7 +86,6 @@ def cal_pass_fp(player):
     except KeyError:
         pass
 
-
     return points
 
 
@@ -188,7 +187,7 @@ def find_num_kicks(plays, stat, **kwargs):
         #
         # for n, game in enumerate(season2014week1):
         # # if n > 0: break
-        #     for num, p in enumerate(game.players):
+        # for num, p in enumerate(game.players):
         #         # if num > 0: break
         #         if 'defense_tkl' in p._stats: continue # no defensive players will be on a roster
         #         pts = calc_off_fp(p, game)

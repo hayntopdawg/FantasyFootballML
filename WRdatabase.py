@@ -1,5 +1,6 @@
 import nfldb
 import scoring
+from datetime import datetime
 
 __author__ = 'hayntopdawg'
 
@@ -42,25 +43,30 @@ def add_player_year(pp, season):
                                                      'weeks': {}}
 
 
-def calc_age(player_id, season, db):
-    pass
+def calc_age(player_id, season):
+    global players
+
+    # season start will be 9/1 of each year
+    season_start_date = datetime(int(season), 9, 1)
+    birthdate = datetime.strptime(players[player_id]['dob'], '%m/%d/%Y')
+    total_days = (season_start_date - birthdate).days
+    players[player_id]['seasons'][season]['age'] = int(total_days / 365)
 
 
 # Assumes database is pulled up to current date
 def correct_years_pro(player_id, db):
     global players
 
-    current_season = nfldb.current(db)[1]
+    db_season = nfldb.current(db)[1]
     seasons = [s for s in players[player_id]['seasons']]
-    last_season = max(seasons)
+    last_season_played = max(seasons)
 
-    # player retired
-    if int(current_season) - int(last_season) > 1:
-        for season in seasons:
-            players[player_id]['seasons'][season]['years_pro'] -= int(last_season) - int(season)
-    else:
-        for season in seasons:
-            players[player_id]['seasons'][season]['years_pro'] -= int(current_season) - int(season)
+    for season in seasons:
+        # player retired
+        if int(db_season) - int(last_season_played) > 1:
+            players[player_id]['seasons'][season]['years_pro'] -= int(last_season_played) - int(season)
+        else:
+            players[player_id]['seasons'][season]['years_pro'] -= int(db_season) - int(season)
 
 
 def add_player_week(pp, season, week):
@@ -223,6 +229,7 @@ def create_wr_db(seasons, weeks=range(1, 18)):
         # calc years pro
         correct_years_pro(player, db)
         for season in players[player]['seasons']:
+            calc_age(player, season)
             for week in players[player]['seasons'][season]['weeks']:
                 get_fp(player, season, week)
 
@@ -243,17 +250,21 @@ if __name__ == '__main__':
         # i += 1
         if i > 10: break
         for season in players[player]['seasons']:
-            print players[player]['name'], season, players[player]['seasons'][season]['years_pro']
+            print "{} in the {} season played {} " \
+                  "years and was {} years old".format(players[player]['name'],
+                                                      season,
+                                                      players[player]['seasons'][season]['years_pro'],
+                                                      players[player]['seasons'][season]['age'])
             # print type(season)
         i += 1
 
-    # for player in players:
-    #     for season in players[player]['seasons']:
-    #         for week in players[player]['seasons'][season]:
-    #             p = players[player]['seasons'][season][week]
-    #             print p
-    #             print type(p)
-    #             print p['fp']
-    #             break
-    #         break
-    #     break
+        # for player in players:
+        # for season in players[player]['seasons']:
+        #         for week in players[player]['seasons'][season]:
+        #             p = players[player]['seasons'][season][week]
+        #             print p
+        #             print type(p)
+        #             print p['fp']
+        #             break
+        #         break
+        #     break
