@@ -42,49 +42,25 @@ def add_player_year(pp, season):
                                                      'weeks': {}}
 
 
-def calc_age(pp, season, db):
+def calc_age(player_id, season, db):
     pass
 
 
 # Assumes database is pulled up to current date
-def calc_years_pro(pp, season, game, db):
-    # global players
-    # if pp.player.years_pro is None:
-    # print 'pp.player:', pp.player, len(players[pp.player_id])-4
-    # years_pro = len(players[pp.player_id])-4
-    #     print 'years_pro', len(players[pp.player_id])-4
-    #     print 'pp.player:', pp.player
-    #     print 'pp.player.years_pro:', pp.player.years_pro
-    #     print 'nfldb.current(db)[1]:', nfldb.current(db)[1]
-    #     print 'game.season_year:', game.season_year
-    # elif pp.player.years_pro - (nfldb.current(db)[1] - game.season_year) < 0:
-    #     print 'pp.player:', pp.player.full_name
-    #     print 'pp.player.years_pro:', pp.player.years_pro
-    #     print 'nfldb.current(db)[1]:', nfldb.current(db)[1]
-    #     print 'game.season_year:', game.season_year
-    # else:
-    #     print "Last season played:",
-    #     years_pro = pp.player.years_pro
-    # years_pro = pp.player.years_pro - (nfldb.current(db)[1] - game.season_year)
-    # players[pp.player_id]['seasons'][str(season)]['years_pro'] = years_pro
+def correct_years_pro(player_id, db):
+    global players
 
-    # If pp.player.years_pro is None
-    #     Player should only have 1 season under seasons
-    #     Years pro = 0 for 1 Rookie season
+    current_season = nfldb.current(db)[1]
+    seasons = [s for s in players[player_id]['seasons']]
+    last_season = max(seasons)
 
-    # If pp.player.status == 'Active'
-    #     If nfldb.current(db)[1] != max(season) in seasons
-    #          Years pro for max(season) in seasons = pp.player.years_pro - 1
-    #          Years pro - 1 for each season after
-    #     Else
-    #          Years pro for max(season) in seasons = pp.player.years_pro
-    #          Years pro - 1 for each season after
-
-    # If pp.player.status != 'Active'
-    #     Years pro for max(season) in seasons = pp.player.years_pro
-    #     Years pro - 1 for each season after
-
-    pass
+    # player retired
+    if int(current_season) - int(last_season) > 1:
+        for season in seasons:
+            players[player_id]['seasons'][season]['years_pro'] -= int(last_season) - int(season)
+    else:
+        for season in seasons:
+            players[player_id]['seasons'][season]['years_pro'] -= int(current_season) - int(season)
 
 
 def add_player_week(pp, season, week):
@@ -244,8 +220,9 @@ def create_wr_db(seasons, weeks=range(1, 18)):
                         get_wr_stats(pp, season, week)
 
     for player in players:
+        # calc years pro
+        correct_years_pro(player, db)
         for season in players[player]['seasons']:
-            # calc years pro
             for week in players[player]['seasons'][season]['weeks']:
                 get_fp(player, season, week)
 
@@ -260,15 +237,15 @@ if __name__ == '__main__':
     for player in players:
         # print players[player]
         # break
-        if i > 5: break
-        print player, players[player]
+        # if i > 5: break
+        # print player, players[player]
         # print players[player]['name'], players[player]['seasons']['2014']['weeks']['1']['fp']
+        # i += 1
+        if i > 10: break
+        for season in players[player]['seasons']:
+            print players[player]['name'], season, players[player]['seasons'][season]['years_pro']
+            # print type(season)
         i += 1
-    # for season in players[player]['seasons']:
-    #     print season
-    #     print type(season)
-    #     break
-    # break
 
     # for player in players:
     #     for season in players[player]['seasons']:
